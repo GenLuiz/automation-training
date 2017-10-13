@@ -3,10 +3,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 
 public class JunitSample {
 
-    protected static final WebDriver DRIVER = new ChromeDriver();
+    protected static WebDriver DRIVER;
     protected static final String DRIVER_EXE = "webdriver.chrome.driver";
     protected static final String DRIVER_PATH = "C:\\temp\\test automation training\\chromedriver.exe";
     protected static final String API_URL = "http://localhost:8080/samplebank/index";
@@ -15,6 +16,7 @@ public class JunitSample {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         System.setProperty(DRIVER_EXE, DRIVER_PATH);
+        DRIVER = new ChromeDriver();
         DRIVER.get(API_URL);
     }
 
@@ -43,17 +45,33 @@ public class JunitSample {
     }
 
     @Test
-    public void addAccount(){
+    public void addAccountTest(){
         DRIVER.findElement(By.xpath("//*[@href='addAccount']")).click();
 
         Assert.assertEquals("New Customer Account",DRIVER.findElement(By.xpath("//*[@class='sb-content-desc']")).getText());
 
         WebElement ownerCpfElement = DRIVER.findElement(By.id("ownerCpf"));
 
+        ownerCpfElement.sendKeys("07249738933");
+
+        DRIVER.findElement(By.xpath("//*[@value='Create Account']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
+
     }
 
     @Test
-    public void test2(){
-        System.out.println("test2");
+    public void depositTest(){
+        DRIVER.findElement(By.xpath("//*[@href='deposit']")).click();
+
+        Select drpAccount = new Select(DRIVER.findElement(By.id("targetAccount")));
+        drpAccount.selectByVisibleText("07249738933");
+
+        DRIVER.findElement(By.id("ammount")).sendKeys("12.13");
+        DRIVER.findElement(By.xpath("//*[@value='Deposit']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
     }
 }
