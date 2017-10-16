@@ -5,6 +5,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import java.sql.Driver;
+
 public class JunitSample {
 
     protected static WebDriver DRIVER;
@@ -22,8 +24,8 @@ public class JunitSample {
 
     @AfterClass
     public static void tearDownAfterClass() throws Exception{
-        DRIVER.close();
-        DRIVER.quit();
+//        DRIVER.close();
+//        DRIVER.quit();
     }
 
     @Before
@@ -52,7 +54,7 @@ public class JunitSample {
 
         WebElement ownerCpfElement = DRIVER.findElement(By.id("ownerCpf"));
 
-        ownerCpfElement.sendKeys("07249738933");
+        ownerCpfElement.sendKeys("14785833718");
 
         DRIVER.findElement(By.xpath("//*[@value='Create Account']")).click();
 
@@ -70,6 +72,82 @@ public class JunitSample {
 
         DRIVER.findElement(By.id("ammount")).sendKeys("12.13");
         DRIVER.findElement(By.xpath("//*[@value='Deposit']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
+    }
+
+    @Test
+    public void accountInformationTest(){
+        DRIVER.findElement(By.xpath("//*[@href='accountInfo']")).click();
+        Select drpAccount = new Select(DRIVER.findElement(By.id("ownerCpfSelect")));
+        drpAccount.selectByVisibleText("07249738933");
+
+        DRIVER.findElement(By.xpath("//*[@value='Get Information']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
+    }
+
+    @Test
+    public void withdrawnTest(){
+        DRIVER.findElement(By.xpath("//*[@href='withdraw']")).click();
+
+        WebElement pageTitle = DRIVER.findElement(By.xpath("//*[contains(@class, 'sb-content-desc')]"));
+        Assert.assertEquals("Withdraw Amount",pageTitle.getText());
+
+        Select drpAccount = new Select(DRIVER.findElement(By.id("targetAccount")));
+        drpAccount.selectByVisibleText("07249738933");
+
+        DRIVER.findElement(By.id("ammount")).sendKeys("0.01");
+
+        DRIVER.findElement(By.xpath("//*[@value='Withdraw']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
+    }
+
+    @Test
+    public void transferTest(){
+        DRIVER.findElement(By.xpath("//*[@href='transfer']")).click();
+
+        WebElement pageTitle = DRIVER.findElement(By.xpath("//*[contains(@class, 'sb-content-desc')]"));
+        Assert.assertEquals("Transfer Amount Between Accounts",pageTitle.getText());
+
+        Select drpAccountSource = new Select(DRIVER.findElement(By.id("sourceAccount")));
+        drpAccountSource.selectByVisibleText("07249738933");
+
+        Select drpAccountTarget = new Select(DRIVER.findElement(By.id("targetAccount")));
+        drpAccountTarget.selectByVisibleText("07233893794");
+
+        DRIVER.findElement(By.id("ammount")).sendKeys("0.01");
+
+        DRIVER.findElement(By.xpath("//*[@value='Transfer']")).click();
+
+        WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
+        Assert.assertEquals("Operation completed with success",successMessage.getText());
+    }
+
+    @Test
+    public void loansTest(){
+        DRIVER.findElement(By.linkText("Loans")).click();
+        try{
+            Thread.sleep(1000);
+        }
+        catch(InterruptedException ie){
+        }
+
+        DRIVER.findElement(By.xpath("//*[@href='loan']")).click();
+
+        WebElement pageTitle = DRIVER.findElement(By.xpath("//*[contains(@class, 'sb-content-desc')]"));
+        Assert.assertEquals("Credit Operations: Get Loan",pageTitle.getText());
+
+        Select drpAccountSource = new Select(DRIVER.findElement(By.id("targetAccount")));
+        drpAccountSource.selectByVisibleText("07233893794");
+
+        DRIVER.findElement(By.id("ammount")).sendKeys("10.00");
+
+        DRIVER.findElement(By.xpath("//*[@value='Get Loan!']")).click();
 
         WebElement successMessage = DRIVER.findElement(By.id("sb-return-message"));
         Assert.assertEquals("Operation completed with success",successMessage.getText());
